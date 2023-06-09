@@ -1,10 +1,8 @@
 import time
 start_time = time.time()
 
-filestub = '/Users/mattparker/Dropbox/python/five_letter_words/'
-
 def load_words():
-    words_txt = '/Users/mattparker/Dropbox/python/five_letter_words/words_alpha.txt'
+    words_txt = './words_alpha.txt'
     with open(words_txt) as word_file:
         valid_words = list(word_file.read().split())
     return valid_words
