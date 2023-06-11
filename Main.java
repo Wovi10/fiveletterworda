@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     private static final int WORD_LENGTH = 5;
@@ -64,14 +62,15 @@ public class Main {
         sortedList.sort((word1, word2) -> {
             char[] chars1 = word1.toCharArray();
             char[] chars2 = word2.toCharArray();
-            for (int i = 0; i < chars1.length; i++) {
+            int length = Math.min(chars1.length, chars2.length);
+            for (int i = 0; i < length; i++) {
                 int index1 = CUSTOM_ORDER.indexOf(chars1[i]);
                 int index2 = CUSTOM_ORDER.indexOf(chars2[i]);
                 if (index1 != index2) {
                     return Integer.compare(index1, index2);
                 }
             }
-            return 0;
+            return Integer.compare(chars1.length, chars2.length);
         });
 
         System.out.println("Sorted according to custom order");
@@ -79,24 +78,22 @@ public class Main {
     }
 
     public static boolean checkWord(String word) {
-        List<Character> tempUsedLetters = new ArrayList<>();
+        Set<Character> tempUsedLetters = new HashSet<>();
         char[] sortedChars = word.toCharArray();
         Arrays.sort(sortedChars);
 
         for (char letter : sortedChars) {
-            if (tempUsedLetters.contains(letter)) {
+            if (!tempUsedLetters.add(letter)) {
                 return false;
             }
-            tempUsedLetters.add(letter);
         }
         return true;
     }
 
-    public static boolean checkWordToOtherWord(List<Character> usedLetters, String word2) {
+    public static boolean checkWordToOtherWord(Set<Character> usedLetters, String word2) {
+        Set<Character> word2Set = new HashSet<>();
         for (char letter : word2.toCharArray()) {
-            if (usedLetters.contains(letter)) {
-                return false;
-            }
+            if(usedLetters.contains(letter)) return false;
         }
         return true;
     }
@@ -104,134 +101,174 @@ public class Main {
     public static void main(String[] args) {
         List<String> longestRow = new ArrayList<>();
         List<String> allWordsToCheck = getAllWords();
-        int index = 0;
         List<Integer> wordsTried = new ArrayList<>();
         long startTime = System.currentTimeMillis();
-        for (String word : allWordsToCheck) {
-            wordsTried.add(index);
-            List<Integer> wordsTried2 = new ArrayList<>();
-            List<Character> usedLetters1 = sortString(word);
-            List<String> possibility = new ArrayList<>();
-            possibility.add(word);
 
-            List<String> longestRowForWord = new ArrayList<>();
-            int index2 = 0;
-            for (String word2 : allWordsToCheck) {
-                wordsTried2.add(index2);
-                if (wordsTried.contains(index2)) {
-                    index2++;
-                    continue;
-                }
-                index2++;
+        findLongestRow(allWordsToCheck, wordsTried, new ArrayList<>(), longestRow);
 
-                boolean isValid = checkWordToOtherWord(usedLetters1, word2);
-                if (!isValid) {
-                    continue;
-                }
-
-                List<Character> usedLetters2 = sortString(word + word2);
-
-                List<String> possibility2 = new ArrayList<>(possibility);
-                possibility2.add(word2);
-
-                if (possibility2.size() >= longestRowForWord.size()) {
-                    longestRowForWord = new ArrayList<>(possibility2);
-                }
-
-                List<Integer> wordsTried3 = new ArrayList<>();
-                int index3 = 0;
-                for (String word3 : allWordsToCheck) {
-                    wordsTried3.add(index3);
-                    if (wordsTried3.contains(index3)) {
-                        index3++;
-                        continue;
-                    }
-                    index3++;
-
-                    boolean isValid3 = checkWordToOtherWord(usedLetters2, word3);
-                    if (!isValid3) {
-                        continue;
-                    }
-
-                    List<Character> usedLetters3 = sortString(word + word2 + word3);
-
-                    List<String> possibility3 = new ArrayList<>(possibility2);
-                    possibility3.add(word3);
-
-                    if (possibility3.size() >= longestRowForWord.size()) {
-                        longestRowForWord = new ArrayList<>(possibility3);
-                    }
-
-                    List<Integer> wordsTried4 = new ArrayList<>();
-                    int index4 = 0;
-                    for (String word4 : allWordsToCheck) {
-                        wordsTried4.add(index4);
-                        if (wordsTried4.contains(index4)) {
-                            index4++;
-                            continue;
-                        }
-                        index4++;
-
-                        boolean isValid4 = checkWordToOtherWord(usedLetters3, word4);
-                        if (!isValid4) {
-                            continue;
-                        }
-
-                        List<Character> usedLetters4 = sortString(word + word2 + word3 + word4);
-
-                        List<String> possibility4 = new ArrayList<>(possibility3);
-                        possibility4.add(word4);
-
-                        if (possibility4.size() >= longestRowForWord.size()) {
-                            longestRowForWord = new ArrayList<>(possibility4);
-                        }
-
-                        int index5 = 0;
-                        for (String word5 : allWordsToCheck) {
-                            if (wordsTried4.contains(index5)) {
-                                index5++;
-                                continue;
-                            }
-                            index5++;
-
-                            boolean isValid5 = checkWordToOtherWord(usedLetters4, word5);
-                            if (!isValid5) {
-                                continue;
-                            }
-
-                            if (possibility4.size() + 1 > longestRowForWord.size()) {
-                                longestRowForWord = new ArrayList<>(possibility4);
-                                longestRowForWord.add(word5);
-                            }
-                        }
-                    }
-                }
-
-                if (possibility.size() >= longestRowForWord.size()) {
-                    longestRowForWord = new ArrayList<>(possibility);
-                }
-                if (longestRowForWord.size() >= longestRow.size()) {
-                    longestRow = new ArrayList<>(longestRowForWord);
-                }
-            }
-            index++;
-            if (index % CHECKING_STEP == 0) {
-                System.out.println("Tested " + index + " words.");
-                System.out.println(longestRow);
-            }
-        }
+//        for (String word : allWordsToCheck) {
+//            wordsTried.add(index);
+//            List<Integer> wordsTried2 = new ArrayList<>();
+//            Set<Character> usedLetters1 = sortString(word);
+//            List<String> possibility = new ArrayList<>();
+//            possibility.add(word);
+//
+//            List<String> longestRowForWord = new ArrayList<>();
+//            int index2 = 0;
+//            for (String word2 : allWordsToCheck) {
+//                wordsTried2.add(index2);
+//                if (wordsTried.contains(index2)) {
+//                    index2++;
+//                    continue;
+//                }
+//                index2++;
+//
+//                boolean isValid = checkWordToOtherWord(usedLetters1, word2);
+//                if (!isValid) {
+//                    continue;
+//                }
+//
+//                Set<Character> usedLetters2 = sortString(word + word2);
+//
+//                List<String> possibility2 = new ArrayList<>(possibility);
+//                possibility2.add(word2);
+//
+//                if (possibility2.size() >= longestRowForWord.size()) {
+//                    longestRowForWord = new ArrayList<>(possibility2);
+//                }
+//
+//                List<Integer> wordsTried3 = new ArrayList<>();
+//                int index3 = 0;
+//                for (String word3 : allWordsToCheck) {
+//                    wordsTried3.add(index3);
+//                    if (wordsTried3.contains(index3)) {
+//                        index3++;
+//                        continue;
+//                    }
+//                    index3++;
+//
+//                    boolean isValid3 = checkWordToOtherWord(usedLetters2, word3);
+//                    if (!isValid3) {
+//                        continue;
+//                    }
+//
+//                    Set<Character> usedLetters3 = sortString(word + word2 + word3);
+//
+//                    List<String> possibility3 = new ArrayList<>(possibility2);
+//                    possibility3.add(word3);
+//
+//                    if (possibility3.size() >= longestRowForWord.size()) {
+//                        longestRowForWord = new ArrayList<>(possibility3);
+//                    }
+//
+//                    List<Integer> wordsTried4 = new ArrayList<>();
+//                    int index4 = 0;
+//                    for (String word4 : allWordsToCheck) {
+//                        wordsTried4.add(index4);
+//                        if (wordsTried4.contains(index4)) {
+//                            index4++;
+//                            continue;
+//                        }
+//                        index4++;
+//
+//                        boolean isValid4 = checkWordToOtherWord(usedLetters3, word4);
+//                        if (!isValid4) {
+//                            continue;
+//                        }
+//
+//                        Set<Character> usedLetters4 = sortString(word + word2 + word3 + word4);
+//
+//                        List<String> possibility4 = new ArrayList<>(possibility3);
+//                        possibility4.add(word4);
+//
+//                        if (possibility4.size() >= longestRowForWord.size()) {
+//                            longestRowForWord = new ArrayList<>(possibility4);
+//                        }
+//
+//                        int index5 = 0;
+//                        for (String word5 : allWordsToCheck) {
+//                            if (wordsTried4.contains(index5)) {
+//                                index5++;
+//                                continue;
+//                            }
+//                            index5++;
+//
+//                            boolean isValid5 = checkWordToOtherWord(usedLetters4, word5);
+//                            if (!isValid5) {
+//                                continue;
+//                            }
+//
+//                            if (possibility4.size() + 1 > longestRowForWord.size()) {
+//                                longestRowForWord = new ArrayList<>(possibility4);
+//                                longestRowForWord.add(word5);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                if (possibility.size() >= longestRowForWord.size()) {
+//                    longestRowForWord = new ArrayList<>(possibility);
+//                }
+//                if (longestRowForWord.size() >= longestRow.size()) {
+//                    longestRow = new ArrayList<>(longestRowForWord);
+//                }
+//            }
+//            index++;
+//            if (index % CHECKING_STEP == 0) {
+//                System.out.println("Tested " + index + " words.");
+//                System.out.println(longestRow);
+//            }
+//        }
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
         System.out.println("Execution time: " + duration + " milliseconds");
+        System.out.println(longestRow);
     }
 
-    public static List<Character> sortString(String word) {
+    private static void findLongestRow(List<String> allWordsToCheck, List<Integer> wordsTried, List<String> currentRow, List<String> longestRow) {
+        if(currentRow.size() > longestRow.size()){
+            longestRow.clear();
+            longestRow.addAll(currentRow);
+        }
+
+        for (int i = 0; i < allWordsToCheck.size(); i++) {
+            if (wordsTried.contains(i)) {
+                continue;
+            }
+
+            String word = allWordsToCheck.get(i);
+            Set<Character> usedLetters = sortString(String.join("", currentRow));
+
+            if (checkWordToOtherWords(usedLetters, allWordsToCheck)) {
+                currentRow.add(word);
+                wordsTried.add(i);
+
+                findLongestRow(allWordsToCheck, wordsTried, currentRow, longestRow);
+
+                currentRow.remove(currentRow.size() - 1);
+                wordsTried.remove(wordsTried.size() - 1);
+            }
+        }
+        System.out.println(longestRow);
+    }
+
+    public static boolean checkWordToOtherWords(Set<Character> usedLetters, List<String> allWordsToCheck) {
+        for (String word : allWordsToCheck) {
+            if (!checkWordToOtherWord(usedLetters, word)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public static Set<Character> sortString(String word) {
         char[] chars = word.toCharArray();
         Arrays.sort(chars);
-        List<Character> sortedLetters = new ArrayList<>();
-        for (char letter : chars) {
+
+        Set<Character> sortedLetters = new TreeSet<>();
+        for(char letter : chars){
             sortedLetters.add(letter);
         }
+
         return sortedLetters;
     }
 }
