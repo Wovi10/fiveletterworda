@@ -1,3 +1,4 @@
+from itertools import groupby, tee
 import time
 
 WORD_LENGTH = 5
@@ -54,75 +55,114 @@ def check_word(word):
         temp_used_letter.append(letter)
     return True
 
-def check_word_to_other_word(used_letters, word2):
-    for letter in sorted(word2):
-        if letter in used_letters:
+def check_word_to_other_word(used_letters, word):
+    index = 0
+    for letter in sorted(word):
+        if letter in sorted(used_letters, key=lambda word:
+            [CUSTOM_ORDER.index(letter) for letter in word]):
             return False
+        index += 1
     return True
 
 def make_all_combinations(all_words):
     all_combinations = []
-    used_letters_1 = ""
-    for word1 in all_words:
-        start_time = time.time()
-        possibility = []
-        possibility.append(word1)
-        used_letters_1 = sorted(word1)
-        for word2 in all_words:
-            if word2 == word1:
-                continue
-            is_valid = check_word_to_other_word(used_letters_1, word2)
-            if not is_valid:
-                continue
-            used_letters_2 = sorted(word1 + word2)
-            possibility.append(word2)
-            for word3 in all_words:
-                if word3 == word1 or word3 == word2:
+    groups_1 = groupby(all_words, key=lambda x:x[0])
+    for current_letter_1, group_1 in groups_1:
+        group_1_list = list(group_1)
+        for word1 in group_1_list:
+            start_time = time.time()
+            used_letters_1 = ""
+            longest_possibility_of_word = []
+            longest_possibility_of_word.append(word1)
+            used_letters_1 = word1
+
+            groups_2 = groupby(all_words, key=lambda x:x[0])
+            for current_letter_2, group_2 in groups_2:
+                if current_letter_2 == current_letter_1:
                     continue
-                is_valid = check_word_to_other_word(used_letters_2, word3)
-                if not is_valid:
-                    continue
-                used_letters_3 = sorted(word1 + word2 + word3)
-                possibility.append(word3)
-                for word4 in all_words:
-                    if word4 == word1 or word4 == word2 or word4 == word3:
+                group_2_list = list(group_2)
+                possibility_2 = []
+                possibility_2.append(word1)
+                for word2 in group_2_list:
+                    if word2 == word1:
                         continue
-                    is_valid = check_word_to_other_word(used_letters_3, word4)
+                    is_valid = check_word_to_other_word(used_letters_1, word2)
                     if not is_valid:
                         continue
-                    used_letters_4 = sorted(word1 + word2 + word3 + word4)
-                    possibility.append(word4)
-                    for word5 in all_words:
-                        if word5 == word1 or word5 == word2 or word5 == word3 or word5 == word4:
+                    used_letters_2 = ""
+                    used_letters_2 = word1 + word2
+                    if len(possibility_2) == 2:
+                        possibility_2.pop()
+                    possibility_2.append(word2)
+                    if len(longest_possibility_of_word) < 2:
+                        longest_possibility_of_word = possibility_2[:]
+                    groups_3 = groupby(all_words, key=lambda x:x[0])
+                    for current_letter_3, group_3 in groups_3:
+                        if current_letter_3 in (current_letter_1, current_letter_2):
                             continue
-                        is_valid = check_word_to_other_word(used_letters_4, word5)
-                        if not is_valid:
-                            continue
-                        possibility.append(word5)
-                        all_combinations.append(possibility)
-        print(f"Found a combo after {time.time() - start_time} seconds:")
-        print(possibility)
+                        group_3_list = list(group_3)
+                        possibility_3 = possibility_2[:]
+                        for word3 in group_3_list:
+                            if word3 in (word1, word2):
+                                continue
+                            is_valid = check_word_to_other_word(used_letters_2, word3)
+                            if not is_valid:
+                                continue
+                            used_letters_3 = word1 + word2 + word3
+                            if len(possibility_3) == 3:
+                                possibility_3.pop()
+                            possibility_3.append(word3)
+                            if len(longest_possibility_of_word) <= 3:
+                                longest_possibility_of_word = possibility_3[:]
+                            groups_4 = groupby(all_words, key=lambda x:x[0])
+                            for current_letter_4, group_4 in groups_4:
+                                if current_letter_4 in (current_letter_1, current_letter_2, current_letter_3):
+                                    continue
+                                group_4_list = list(group_4)
+                                possibility_4 = possibility_3[:]
+                                for word4 in group_4_list:
+                                    if word4 in (word1, word2, word3):
+                                        continue
+                                    is_valid = check_word_to_other_word(used_letters_3, word4)
+                                    if not is_valid:
+                                        continue
+                                    used_letters_4 = word1 + word2 + word3 + word4
+                                    if len(possibility_4) == 4:
+                                        possibility_4.pop()
+                                    possibility_4.append(word4)
+                                    if len(longest_possibility_of_word) <= 4:
+                                        longest_possibility_of_word = possibility_4[:]
+                                    groups_5 = groupby(all_words, key=lambda x:x[0])
+                                    for current_letter_5, group_5 in groups_5:
+                                        if current_letter_5 in (current_letter_1, current_letter_2, current_letter_3, current_letter_4):
+                                            continue
+                                        group_5_list = list(group_5)
+                                        possibility_5 = possibility_4[:]
+                                        for word5 in group_5_list:
+                                            if word5 in (word1, word2, word3, word4):
+                                                continue
+                                            is_valid = check_word_to_other_word(used_letters_4, word5)
+                                            if not is_valid:
+                                                continue
+                                            if len(possibility_5) == 5:
+                                                possibility_5.pop()
+                                            possibility_5.append(word5)
+                                            if len(longest_possibility_of_word) <= 5:
+                                                longest_possibility_of_word = possibility_5[:]
+            copy_of_longest = longest_possibility_of_word[:]
+            all_combinations.append(copy_of_longest)
+            print(f"found one in {time.time() - start_time} seconds")
 
     return all_combinations
 
 def main():
-    longest_row = []
     all_words_to_check = get_all_words()
     all_combinations = []
     all_combinations = make_all_combinations(all_words_to_check)
-    index = 0
-    words_tried = []
     for combination in all_combinations:
-        used_letters_in_combo = []
-        for word in combination:
-            for letter in word:
-                if letter in used_letters_in_combo:
-                    continue
-                used_letters_in_combo.append(letter)
-        if len(used_letters_in_combo) == MAX_NUM_WORDS:
-            longest_row = combination
+        if len(combination) == MAX_NUM_WORDS:
             print("Found a combination:")
-            print(longest_row)
+            print(combination)
 
     # old_way(all_words_to_check, words_tried)
 
