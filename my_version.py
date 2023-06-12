@@ -67,7 +67,9 @@ def check_word_to_other_word(used_letters, word):
 def make_all_combinations(all_words):
     all_combinations = []
     groups_1 = groupby(all_words, key=lambda x:x[0])
+    tried_groups_1 = ""
     for current_letter_1, group_1 in groups_1:
+        tried_groups_1 += current_letter_1
         group_1_list = list(group_1)
         for word1 in group_1_list:
             start_time = time.time()
@@ -77,8 +79,10 @@ def make_all_combinations(all_words):
             used_letters_1 = word1
 
             groups_2 = groupby(all_words, key=lambda x:x[0])
+            tried_groups_2 = ""
             for current_letter_2, group_2 in groups_2:
-                if current_letter_2 == current_letter_1:
+                tried_groups_2 += current_letter_2
+                if current_letter_2 in tried_groups_1:
                     continue
                 group_2_list = list(group_2)
                 possibility_2 = []
@@ -97,8 +101,10 @@ def make_all_combinations(all_words):
                     if len(longest_possibility_of_word) < 2:
                         longest_possibility_of_word = possibility_2[:]
                     groups_3 = groupby(all_words, key=lambda x:x[0])
+                    tried_groups_3 = ""
                     for current_letter_3, group_3 in groups_3:
-                        if current_letter_3 in (current_letter_1, current_letter_2):
+                        tried_groups_3 += current_letter_3
+                        if current_letter_3 in tried_groups_2:
                             continue
                         group_3_list = list(group_3)
                         possibility_3 = possibility_2[:]
@@ -115,8 +121,10 @@ def make_all_combinations(all_words):
                             if len(longest_possibility_of_word) <= 3:
                                 longest_possibility_of_word = possibility_3[:]
                             groups_4 = groupby(all_words, key=lambda x:x[0])
+                            tried_groups_4 = ""
                             for current_letter_4, group_4 in groups_4:
-                                if current_letter_4 in (current_letter_1, current_letter_2, current_letter_3):
+                                tried_groups_4 += current_letter_4
+                                if current_letter_4 in tried_groups_3:
                                     continue
                                 group_4_list = list(group_4)
                                 possibility_4 = possibility_3[:]
@@ -134,7 +142,7 @@ def make_all_combinations(all_words):
                                         longest_possibility_of_word = possibility_4[:]
                                     groups_5 = groupby(all_words, key=lambda x:x[0])
                                     for current_letter_5, group_5 in groups_5:
-                                        if current_letter_5 in (current_letter_1, current_letter_2, current_letter_3, current_letter_4):
+                                        if current_letter_5 in tried_groups_4:
                                             continue
                                         group_5_list = list(group_5)
                                         possibility_5 = possibility_4[:]
