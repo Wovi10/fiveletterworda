@@ -60,11 +60,74 @@ def check_word_to_other_word(used_letters, word2):
             return False
     return True
 
+def make_all_combinations(all_words):
+    all_combinations = []
+    used_letters_1 = ""
+    for word1 in all_words:
+        start_time = time.time()
+        possibility = []
+        possibility.append(word1)
+        used_letters_1 = sorted(word1)
+        for word2 in all_words:
+            if word2 == word1:
+                continue
+            is_valid = check_word_to_other_word(used_letters_1, word2)
+            if not is_valid:
+                continue
+            used_letters_2 = sorted(word1 + word2)
+            possibility.append(word2)
+            for word3 in all_words:
+                if word3 == word1 or word3 == word2:
+                    continue
+                is_valid = check_word_to_other_word(used_letters_2, word3)
+                if not is_valid:
+                    continue
+                used_letters_3 = sorted(word1 + word2 + word3)
+                possibility.append(word3)
+                for word4 in all_words:
+                    if word4 == word1 or word4 == word2 or word4 == word3:
+                        continue
+                    is_valid = check_word_to_other_word(used_letters_3, word4)
+                    if not is_valid:
+                        continue
+                    used_letters_4 = sorted(word1 + word2 + word3 + word4)
+                    possibility.append(word4)
+                    for word5 in all_words:
+                        if word5 == word1 or word5 == word2 or word5 == word3 or word5 == word4:
+                            continue
+                        is_valid = check_word_to_other_word(used_letters_4, word5)
+                        if not is_valid:
+                            continue
+                        possibility.append(word5)
+                        all_combinations.append(possibility)
+        print(f"Found a combo after {time.time() - start_time} seconds:")
+        print(possibility)
+
+    return all_combinations
+
 def main():
     longest_row = []
     all_words_to_check = get_all_words()
+    all_combinations = []
+    all_combinations = make_all_combinations(all_words_to_check)
     index = 0
     words_tried = []
+    for combination in all_combinations:
+        used_letters_in_combo = []
+        for word in combination:
+            for letter in word:
+                if letter in used_letters_in_combo:
+                    continue
+                used_letters_in_combo.append(letter)
+        if len(used_letters_in_combo) == MAX_NUM_WORDS:
+            longest_row = combination
+            print("Found a combination:")
+            print(longest_row)
+
+    # old_way(all_words_to_check, words_tried)
+
+
+def old_way(all_words_to_check, words_tried):
     for word in all_words_to_check:
         start_time = time.time()
         words_tried.append(index)
