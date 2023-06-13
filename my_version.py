@@ -3,12 +3,10 @@ import time
 
 WORD_LENGTH = 5
 CHECKING_STEP = 500
-ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k','l', 'm',
-            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 CUSTOM_ORDER = ['q', 'x', 'j', 'z', 'v', 'f', 'w', 'b', 'k', 'g', 'p', 'm',
                 'h', 'd', 'c', 'y', 't', 'l', 'n', 'u', 'r', 'o', 'i', 's', 'e', 'a']
 
-MAX_NUM_WORDS = len(ALPHABET) // WORD_LENGTH
+MAX_NUM_WORDS = 26 // WORD_LENGTH
 
 
 def get_all_words():
@@ -49,6 +47,7 @@ def get_all_words():
     print("Sorted according to custom order")
     return sorted_list
 
+
 def check_word(word):
     temp_used_letter = []
     for letter in sorted(word):
@@ -56,6 +55,7 @@ def check_word(word):
             return False
         temp_used_letter.append(letter)
     return True
+
 
 def check_word_to_other_word(used_letters, word):
     index = 0
@@ -65,6 +65,7 @@ def check_word_to_other_word(used_letters, word):
             return False
         index += 1
     return True
+
 
 def make_all_combinations(all_words):
     all_combinations = []
@@ -83,14 +84,14 @@ def make_all_combinations(all_words):
                                                     longest_possibility_of_word, 2)
             copy_of_longest = longest_possibility_of_word[:]
             all_combinations.append(copy_of_longest)
-            print(f"found one in {time.time() - start_time} seconds")
+            print(f"Found one in {time.time() - start_time} seconds")
             print(copy_of_longest)
 
     return all_combinations
 
+
 def word_loop(all_words, previous_tried_groups, previous_words, longest_possibility_of_word, depth):
     groups = groupby(all_words, key=lambda x:x[0])
-    previous_used_letters = "".join(previous_words)
     tried_groups = ""
     for current_letter, group in groups:
         tried_groups += current_letter
@@ -99,7 +100,7 @@ def word_loop(all_words, previous_tried_groups, previous_words, longest_possibil
         group_list = list(group)
         for word in group_list:
             used_letters, longest_possibility_of_word = default_loop_actions(word, previous_words,
-                                                                             previous_used_letters, longest_possibility_of_word)
+                                                                             longest_possibility_of_word)
             if used_letters == "":
                 continue
             if len(previous_words) == depth:
@@ -113,8 +114,8 @@ def word_loop(all_words, previous_tried_groups, previous_words, longest_possibil
     return longest_possibility_of_word
 
 
-def default_loop_actions(word_in_loop, previous_words,
-                         used_letters, longest_possibility_of_word):
+def default_loop_actions(word_in_loop, previous_words, longest_possibility_of_word):
+    used_letters = "".join(previous_words)
     if word_in_loop in previous_words:
         return "", longest_possibility_of_word
     is_valid = check_word_to_other_word(used_letters, word_in_loop)
@@ -126,6 +127,7 @@ def default_loop_actions(word_in_loop, previous_words,
         longest_possibility_of_word = possibility[:]
     return "".join(possibility), longest_possibility_of_word
 
+
 def main():
     all_words_to_check = get_all_words()
     all_combinations = []
@@ -134,5 +136,6 @@ def main():
         if len(combination) == MAX_NUM_WORDS:
             print("Found a combination:")
             print(combination)
+
 
 main()
