@@ -87,7 +87,9 @@ def make_all_combinations(all_words):
                     continue
                 group_2_list = list(group_2)
                 for word2 in group_2_list:
-                    used_letters_2 = default_loop_actions(word2, word1, used_letters_1,2, longest_possibility_of_word)
+                    previous_words_2 = []
+                    previous_words_2.append(word1)
+                    used_letters_2 = default_loop_actions(word2, previous_words_2, used_letters_1,2, longest_possibility_of_word)
                     if used_letters_2 == "":
                         continue
                     groups_3 = groupby(all_words, key=lambda x:x[0])
