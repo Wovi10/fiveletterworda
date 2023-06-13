@@ -80,6 +80,7 @@ def make_all_combinations(all_words):
 
             groups_2 = groupby(all_words, key=lambda x:x[0])
             tried_groups_2 = ""
+            index = 1
             for current_letter_2, group_2 in groups_2:
                 tried_groups_2 += current_letter_2
                 if current_letter_2 in tried_groups_1:
@@ -157,6 +158,9 @@ def make_all_combinations(all_words):
                                             possibility_5.append(word5)
                                             if len(longest_possibility_of_word) <= 5:
                                                 longest_possibility_of_word = possibility_5[:]
+                    if index % 500 == 0:
+                        print(f"Did {index} words of word2")
+                    index += 1
             copy_of_longest = longest_possibility_of_word[:]
             all_combinations.append(copy_of_longest)
             print(f"found one in {time.time() - start_time} seconds")
