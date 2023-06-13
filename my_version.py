@@ -86,21 +86,10 @@ def make_all_combinations(all_words):
                 if current_letter_2 in tried_groups_1:
                     continue
                 group_2_list = list(group_2)
-                possibility_2 = []
-                possibility_2.append(word1)
                 for word2 in group_2_list:
-                    if word2 == word1:
+                    used_letters_2 = default_loop_actions(word2, word1, used_letters_1,2, longest_possibility_of_word)
+                    if used_letters_2 == "":
                         continue
-                    is_valid = check_word_to_other_word(used_letters_1, word2)
-                    if not is_valid:
-                        continue
-                    used_letters_2 = ""
-                    used_letters_2 = word1 + word2
-                    if len(possibility_2) == 2:
-                        possibility_2.pop()
-                    possibility_2.append(word2)
-                    if len(longest_possibility_of_word) < 2:
-                        longest_possibility_of_word = possibility_2[:]
                     groups_3 = groupby(all_words, key=lambda x:x[0])
                     tried_groups_3 = ""
                     for current_letter_3, group_3 in groups_3:
@@ -108,19 +97,13 @@ def make_all_combinations(all_words):
                         if current_letter_3 in tried_groups_2:
                             continue
                         group_3_list = list(group_3)
-                        possibility_3 = possibility_2[:]
                         for word3 in group_3_list:
-                            if word3 in (word1, word2):
+                            previous_words_3 = []
+                            previous_words_3.append(word1)
+                            previous_words_3.append(word2)
+                            used_letters_3 = default_loop_actions(word3, previous_words_3, used_letters_2,3,longest_possibility_of_word)
+                            if used_letters_2 == "":
                                 continue
-                            is_valid = check_word_to_other_word(used_letters_2, word3)
-                            if not is_valid:
-                                continue
-                            used_letters_3 = word1 + word2 + word3
-                            if len(possibility_3) == 3:
-                                possibility_3.pop()
-                            possibility_3.append(word3)
-                            if len(longest_possibility_of_word) <= 3:
-                                longest_possibility_of_word = possibility_3[:]
                             groups_4 = groupby(all_words, key=lambda x:x[0])
                             tried_groups_4 = ""
                             for current_letter_4, group_4 in groups_4:
@@ -128,36 +111,26 @@ def make_all_combinations(all_words):
                                 if current_letter_4 in tried_groups_3:
                                     continue
                                 group_4_list = list(group_4)
-                                possibility_4 = possibility_3[:]
                                 for word4 in group_4_list:
-                                    if word4 in (word1, word2, word3):
+                                    previous_words_4 = []
+                                    previous_words_4.append(word1)
+                                    previous_words_4.append(word2)
+                                    previous_words_4.append(word3)
+                                    used_letters_4 = default_loop_actions(word4, previous_words_4, used_letters_3,4, longest_possibility_of_word)
+                                    if used_letters_4 == "":
                                         continue
-                                    is_valid = check_word_to_other_word(used_letters_3, word4)
-                                    if not is_valid:
-                                        continue
-                                    used_letters_4 = word1 + word2 + word3 + word4
-                                    if len(possibility_4) == 4:
-                                        possibility_4.pop()
-                                    possibility_4.append(word4)
-                                    if len(longest_possibility_of_word) <= 4:
-                                        longest_possibility_of_word = possibility_4[:]
                                     groups_5 = groupby(all_words, key=lambda x:x[0])
                                     for current_letter_5, group_5 in groups_5:
                                         if current_letter_5 in tried_groups_4:
                                             continue
                                         group_5_list = list(group_5)
-                                        possibility_5 = possibility_4[:]
                                         for word5 in group_5_list:
-                                            if word5 in (word1, word2, word3, word4):
-                                                continue
-                                            is_valid = check_word_to_other_word(used_letters_4, word5)
-                                            if not is_valid:
-                                                continue
-                                            if len(possibility_5) == 5:
-                                                possibility_5.pop()
-                                            possibility_5.append(word5)
-                                            if len(longest_possibility_of_word) <= 5:
-                                                longest_possibility_of_word = possibility_5[:]
+                                            previous_words_5 = []
+                                            previous_words_5.append(word1)
+                                            previous_words_5.append(word2)
+                                            previous_words_5.append(word3)
+                                            previous_words_5.append(word4)
+                                            default_loop_actions(word5, previous_words_5, used_letters_4,5,longest_possibility_of_word)
                     if index % 500 == 0:
                         print(f"Did {index} words of word2")
                     index += 1
@@ -166,6 +139,19 @@ def make_all_combinations(all_words):
             print(f"found one in {time.time() - start_time} seconds")
 
     return all_combinations
+
+def default_loop_actions(word_in_loop, previous_words,
+                         used_letters, depth, longest_possibility_of_word):
+    if word_in_loop in previous_words:
+        return ""
+    is_valid = check_word_to_other_word(used_letters, word_in_loop)
+    if not is_valid:
+        return ""
+    possibility = previous_words[:]
+    possibility.append(word_in_loop)
+    if len(longest_possibility_of_word) <= depth:
+        longest_possibility_of_word = possibility[:]
+    return "".join(previous_words)
 
 def main():
     all_words_to_check = get_all_words()
