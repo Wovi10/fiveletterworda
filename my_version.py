@@ -1,11 +1,12 @@
-from itertools import groupby, tee
+from itertools import groupby
 import time
 
 WORD_LENGTH = 5
 CHECKING_STEP = 500
 ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k','l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-CUSTOM_ORDER = ['q', 'x', 'j', 'z', 'v', 'f', 'w', 'b', 'k', 'g', 'p', 'm', 'h', 'd', 'c', 'y', 't', 'l', 'n', 'u', 'r', 'o', 'i', 's', 'e', 'a']
+CUSTOM_ORDER = ['q', 'x', 'j', 'z', 'v', 'f', 'w', 'b', 'k', 'g', 'p', 'm',
+                'h', 'd', 'c', 'y', 't', 'l', 'n', 'u', 'r', 'o', 'i', 's', 'e', 'a']
 
 MAX_NUM_WORDS = len(ALPHABET) // WORD_LENGTH
 
@@ -43,7 +44,8 @@ def get_all_words():
 
     print(f"There are {len(no_anagrams)} words that aren't anagrams.")
 
-    sorted_list = sorted(no_anagrams, key=lambda word: [CUSTOM_ORDER.index(letter) for letter in word])
+    sorted_list = sorted(no_anagrams, key=lambda word:
+        [CUSTOM_ORDER.index(letter) for letter in word])
     print("Sorted according to custom order")
     return sorted_list
 
@@ -73,87 +75,56 @@ def make_all_combinations(all_words):
         group_1_list = list(group_1)
         for word1 in group_1_list:
             start_time = time.time()
-            used_letters_1 = ""
             longest_possibility_of_word = []
             longest_possibility_of_word.append(word1)
-            used_letters_1 = word1
-
-            groups_2 = groupby(all_words, key=lambda x:x[0])
-            tried_groups_2 = ""
-            index = 1
-            for current_letter_2, group_2 in groups_2:
-                tried_groups_2 += current_letter_2
-                if current_letter_2 in tried_groups_1:
-                    continue
-                group_2_list = list(group_2)
-                for word2 in group_2_list:
-                    previous_words_2 = []
-                    previous_words_2.append(word1)
-                    used_letters_2 = default_loop_actions(word2, previous_words_2, used_letters_1,2, longest_possibility_of_word)
-                    if used_letters_2 == "":
-                        continue
-                    groups_3 = groupby(all_words, key=lambda x:x[0])
-                    tried_groups_3 = ""
-                    for current_letter_3, group_3 in groups_3:
-                        tried_groups_3 += current_letter_3
-                        if current_letter_3 in tried_groups_2:
-                            continue
-                        group_3_list = list(group_3)
-                        for word3 in group_3_list:
-                            previous_words_3 = []
-                            previous_words_3.append(word1)
-                            previous_words_3.append(word2)
-                            used_letters_3 = default_loop_actions(word3, previous_words_3, used_letters_2,3,longest_possibility_of_word)
-                            if used_letters_2 == "":
-                                continue
-                            groups_4 = groupby(all_words, key=lambda x:x[0])
-                            tried_groups_4 = ""
-                            for current_letter_4, group_4 in groups_4:
-                                tried_groups_4 += current_letter_4
-                                if current_letter_4 in tried_groups_3:
-                                    continue
-                                group_4_list = list(group_4)
-                                for word4 in group_4_list:
-                                    previous_words_4 = []
-                                    previous_words_4.append(word1)
-                                    previous_words_4.append(word2)
-                                    previous_words_4.append(word3)
-                                    used_letters_4 = default_loop_actions(word4, previous_words_4, used_letters_3,4, longest_possibility_of_word)
-                                    if used_letters_4 == "":
-                                        continue
-                                    groups_5 = groupby(all_words, key=lambda x:x[0])
-                                    for current_letter_5, group_5 in groups_5:
-                                        if current_letter_5 in tried_groups_4:
-                                            continue
-                                        group_5_list = list(group_5)
-                                        for word5 in group_5_list:
-                                            previous_words_5 = []
-                                            previous_words_5.append(word1)
-                                            previous_words_5.append(word2)
-                                            previous_words_5.append(word3)
-                                            previous_words_5.append(word4)
-                                            default_loop_actions(word5, previous_words_5, used_letters_4,5,longest_possibility_of_word)
-                    if index % 500 == 0:
-                        print(f"Did {index} words of word2")
-                    index += 1
+            previous_words_2 = []
+            previous_words_2.append(word1)
+            longest_possibility_of_word = word_loop(all_words, tried_groups_1, previous_words_2,
+                                                    longest_possibility_of_word, 2)
             copy_of_longest = longest_possibility_of_word[:]
             all_combinations.append(copy_of_longest)
             print(f"found one in {time.time() - start_time} seconds")
+            print(copy_of_longest)
 
     return all_combinations
 
+def word_loop(all_words, previous_tried_groups, previous_words, longest_possibility_of_word, depth):
+    groups = groupby(all_words, key=lambda x:x[0])
+    previous_used_letters = "".join(previous_words)
+    tried_groups = ""
+    for current_letter, group in groups:
+        tried_groups += current_letter
+        if current_letter in previous_tried_groups:
+            continue
+        group_list = list(group)
+        for word in group_list:
+            used_letters, longest_possibility_of_word = default_loop_actions(word, previous_words,
+                                                                             previous_used_letters, longest_possibility_of_word)
+            if used_letters == "":
+                continue
+            if len(previous_words) == depth:
+                previous_words.pop()
+            previous_words.append(word)
+            words = previous_words[:]
+            if len(words)+1 >= 5:
+                return longest_possibility_of_word
+            longest_possibility_of_word = word_loop(all_words, tried_groups, words,
+                                                    longest_possibility_of_word, depth+1)
+    return longest_possibility_of_word
+
+
 def default_loop_actions(word_in_loop, previous_words,
-                         used_letters, depth, longest_possibility_of_word):
+                         used_letters, longest_possibility_of_word):
     if word_in_loop in previous_words:
-        return ""
+        return "", longest_possibility_of_word
     is_valid = check_word_to_other_word(used_letters, word_in_loop)
     if not is_valid:
-        return ""
+        return "", longest_possibility_of_word
     possibility = previous_words[:]
     possibility.append(word_in_loop)
-    if len(longest_possibility_of_word) <= depth:
+    if len(longest_possibility_of_word) <= len(possibility):
         longest_possibility_of_word = possibility[:]
-    return "".join(previous_words)
+    return "".join(possibility), longest_possibility_of_word
 
 def main():
     all_words_to_check = get_all_words()
@@ -163,142 +134,5 @@ def main():
         if len(combination) == MAX_NUM_WORDS:
             print("Found a combination:")
             print(combination)
-
-    # old_way(all_words_to_check, words_tried)
-
-
-def old_way(all_words_to_check, words_tried):
-    for word in all_words_to_check:
-        start_time = time.time()
-        words_tried.append(index)
-        longest_row_for_word = []
-        words_tried_2 = []
-        used_letters_1 = []
-        possibility = []
-        possibility.append(word)
-        used_letters_1 = sorted(word)
-
-        index2 = 0
-        for word2 in all_words_to_check:
-            words_tried_2.append(index2)
-            if index2 in words_tried:
-                index2 += 1
-                continue
-            index2 += 1
-
-            is_valid = check_word_to_other_word(used_letters_1, word2)
-            if not is_valid:
-                continue
-
-            used_letters_2 = sorted(word + word2)
-
-            possibility_2 = possibility[:]
-            possibility_2.append(word2)
-
-            if len(possibility_2) >= len(longest_row_for_word):
-                longest_row_for_word = possibility_2[:]
-
-            words_tried_3 = []
-            index3 = 0
-            for word3 in all_words_to_check:
-                words_tried_3.append(index3)
-                if index3 in words_tried_2:
-                    index3 += 1
-                    continue
-                index3 += 1
-
-                is_valid = check_word_to_other_word(used_letters_2, word3)
-                if not is_valid:
-                    continue
-
-                used_letters_3 = sorted(word + word2 + word3)
-
-                possibility_3 = possibility_2[:]
-                possibility_3.append(word3)
-
-                if len(possibility_3) >= len(longest_row_for_word):
-                    longest_row_for_word = possibility_3[:]
-
-                words_tried_4 = []
-                index4 = 0
-                for word4 in all_words_to_check:
-                    words_tried_4.append(index4)
-                    if index4 in words_tried_3:
-                        index4 +=1
-                        continue
-                    index4 +=1
-
-                    is_valid = check_word_to_other_word(used_letters_3, word4)
-                    if not is_valid:
-                        continue
-
-                    used_letters_4 = sorted(word + word2 + word3 + word4)
-
-                    possibility_4 = possibility_3[:]
-                    possibility_4.append(word4)
-
-                    if len(possibility_4) >= len(longest_row_for_word):
-                        longest_row_for_word = possibility_4[:]
-
-                    index5 = 0
-                    for word5 in all_words_to_check:
-                        if index5 in words_tried_4:
-                            index5 += 1
-                            continue
-                        index5 += 1
-
-                        is_valid = check_word_to_other_word(used_letters_4, word5)
-                        if not is_valid:
-                            continue
-
-                        if (len(possibility_4) + 1) > len(longest_row_for_word):
-                            longest_row_for_word = possibility_4[:]
-                            longest_row_for_word.append(word5)
-
-        if len(possibility) >= len(longest_row_for_word):
-            longest_row_for_word = possibility[:]
-        if len(longest_row_for_word) >= len(longest_row):
-            longest_row = longest_row_for_word[:]
-
-        index += 1
-        if index % CHECKING_STEP == 0:
-        # if word == "dwarf":
-            print(f"Tested {index} words.")
-            print(longest_row)
-
-def check_word2(all_words_to_check, used_letters, possibility):
-    possibility_2 = check_word_row(all_words_to_check, used_letters, possibility)
-    if len(possibility_2) >= len(possibility):
-        return possibility_2
-    return possibility
-
-def check_word3(all_words_to_check, used_letters_2, possibility_2):
-    possibility_3 = check_word_row(all_words_to_check, used_letters_2, possibility_2)
-    if len(possibility_3) >= len(possibility_2):
-        return possibility_3
-    return possibility_2
-
-def check_word4(all_words_to_check, used_letters_3, possibility_3):
-    possibility_4 = check_word_row(all_words_to_check, used_letters_3, possibility_3)
-    if len(possibility_4) >= len(possibility_3):
-        return possibility_4
-    return possibility_3
-
-def check_word_row(all_words_to_check:list, used_letters:list, possibility:list) -> list:
-    for word in all_words_to_check:
-        is_valid = check_word_to_other_word(used_letters, word)
-        if not is_valid:
-            continue
-
-        used_letters_1 = used_letters
-        possibility_1 = possibility
-        possibility_1.append(word)
-        for letter in word:
-            used_letters_1.append(letter)
-
-        if len(possibility_1) >= len(possibility):
-            possibility = possibility_1
-
-    return possibility
 
 main()
