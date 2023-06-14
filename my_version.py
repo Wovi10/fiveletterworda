@@ -81,14 +81,14 @@ def word_loop(previous_tried_groups, previous_words, possibility,
             continue
         group_list = list(group)
         for word in group_list:
+            if len(previous_words) == depth:
+                previous_words.pop()
             if depth == 1:
                 possibility = []
                 previous_words = []
             used_letters, possibility = default_loop_actions(word, previous_words, possibility)
             if used_letters == "":
                 continue
-            if len(previous_words) == depth:
-                previous_words.pop()
             previous_words.append(word)
             words = previous_words[:]
             all_combinations.append(words)
@@ -129,6 +129,25 @@ def main():
         #     print("Found a combination:")
         print(combination)
 
+
+def calculate_time_passed(start_time, end_time):
+    total_time = end_time - start_time
+    total_hours = 0
+    total_minutes = 0
+    total_seconds = total_time / 60
+    if total_time / 60 > 1:
+        total_seconds = total_time % 60
+        total_minutes = total_time / 60
+        if total_minutes / 60 > 1:
+            total_minutes %= 60
+            total_hours = total_minutes / 60
+    return f"{total_hours}h:{total_minutes}m:{total_seconds}s"
+
+
+program_start_time = time.time()
 all_words = get_all_words()
 all_combinations = []
 main()
+
+passed_time = calculate_time_passed(program_start_time, time.time())
+print(f"====== Finished running in {passed_time}. ======")
