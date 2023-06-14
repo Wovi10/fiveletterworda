@@ -1,5 +1,5 @@
-dwarf
-glyph
 jocks
-muntz
 vibex
+glyph
+muntz
+dwarf
