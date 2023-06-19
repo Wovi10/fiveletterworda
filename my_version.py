@@ -1,8 +1,9 @@
 from itertools import groupby
+import math
 import time
 
 WORD_LENGTH = 5
-CHECKING_STEP = 500
+CHECKING_STEP = 1000
 CUSTOM_ORDER = ['q', 'x', 'j', 'z', 'v', 'f', 'w', 'b', 'k', 'g', 'p', 'm',
                 'h', 'd', 'c', 'y', 't', 'l', 'n', 'u', 'r', 'o', 'i', 's', 'e', 'a']
 
@@ -71,11 +72,12 @@ def make_all_combinations(all_words):
     all_combinations = []
     groups_1 = groupby(all_words, key=lambda x:x[0])
     tried_groups_1 = ""
+    index = 0
+    start_time = time.time()
     for current_letter_1, group_1 in groups_1:
         tried_groups_1 += current_letter_1
         group_1_list = list(group_1)
         for word1 in group_1_list:
-            start_time = time.time()
             longest_possibility_of_word = []
             longest_possibility_of_word.append(word1)
             previous_words_2 = []
@@ -84,8 +86,13 @@ def make_all_combinations(all_words):
                                                     longest_possibility_of_word, 2)
             copy_of_longest = longest_possibility_of_word[:]
             all_combinations.append(copy_of_longest)
-            print(f"Found one in {time.time() - start_time} seconds")
-            print(copy_of_longest)
+            index += 1
+            if len(copy_of_longest) == MAX_NUM_WORDS:
+                print(f"YESSSSSSSSSSSS, {copy_of_longest}")
+            if index % CHECKING_STEP == 0:
+                print(f"Checked {index} in {time.time() - start_time} seconds")
+                print(copy_of_longest)
+                start_time = time.time()
 
     return all_combinations
 
@@ -107,7 +114,7 @@ def word_loop(all_words, previous_tried_groups, previous_words, longest_possibil
                 previous_words.pop()
             previous_words.append(word)
             words = previous_words[:]
-            if len(words)+1 >= 5:
+            if depth >= 5:
                 return longest_possibility_of_word
             longest_possibility_of_word = word_loop(all_words, tried_groups, words,
                                                     longest_possibility_of_word, depth+1)
@@ -121,6 +128,7 @@ def default_loop_actions(word_in_loop, previous_words, longest_possibility_of_wo
     is_valid = check_word_to_other_word(used_letters, word_in_loop)
     if not is_valid:
         return "", longest_possibility_of_word
+
     possibility = previous_words[:]
     possibility.append(word_in_loop)
     if len(longest_possibility_of_word) <= len(possibility):
@@ -129,13 +137,35 @@ def default_loop_actions(word_in_loop, previous_words, longest_possibility_of_wo
 
 
 def main():
+    program_start_time = time.time()
     all_words_to_check = get_all_words()
     all_combinations = []
     all_combinations = make_all_combinations(all_words_to_check)
+    longest_combo = []
     for combination in all_combinations:
+        if len(combination) > len(longest_combo):
+            longest_combo = combination[:]
         if len(combination) == MAX_NUM_WORDS:
             print("Found a combination:")
             print(combination)
+    print(f"Longest combo is {longest_combo}")
+    total_time_hours = 0
+    total_time_minutes = 0
+    total_time_seconds = time.time() - program_start_time
+    if total_time_seconds / 60 > 1:
+        total_time_minutes = math.floor(total_time_seconds / 60)
+        total_time_seconds %= 60
+        if total_time_minutes / 60 > 1:
+            total_time_hours = math.floor(total_time_minutes / 60)
+            total_time_minutes %= 60
+    total_time = ""
+    if total_time_hours > 0:
+        total_time = f"{total_time_hours} hours {total_time_minutes} minutes and {total_time_seconds} seconds"
+    elif total_time_minutes > 0:
+        total_time = f"{total_time_minutes} minutes and {total_time_seconds} seconds"
+    else:
+        total_time = f"{total_time_seconds} seconds"
+    print(f"Finished in {total_time}")
 
 
 main()
