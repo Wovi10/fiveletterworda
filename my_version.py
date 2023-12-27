@@ -1,51 +1,48 @@
 from itertools import groupby
-import math
 import time
 
 WORD_LENGTH = 5
 CHECKING_STEP = 1000
-CUSTOM_ORDER = ['q', 'x', 'j', 'z', 'v', 'f', 'w', 'b', 'k', 'g', 'p', 'm',
-                'h', 'd', 'c', 'y', 't', 'l', 'n', 'u', 'r', 'o', 'i', 's', 'e', 'a']
+CUSTOM_ORDER = ['q', 'j', 'x', 'z', 'w', 'k', 'v', 'f', 'y', 'b', 'h', 'm', 'p',
+                'g', 'u', 'd', 'c', 'l', 'o', 't', 'n', 'r', 'a', 'i', 's', 'e']
+CUSTOM_ORDER2 = ['e', 's', 'i', 'a', 'r', 'n', 't', 'o', 'l', 'c', 'd', 'u', 'g',
+                 'p', 'm', 'h', 'b', 'y', 'f', 'v', 'k', 'w', 'z', 'x', 'j', 'q']
 
 MAX_NUM_WORDS = 26 // WORD_LENGTH
 
 
 def get_all_words():
+    filtering_start_time = time.time()
     words_txt = './words_alpha.txt'
     with open(words_txt, 'r', encoding="utf-8") as word_file:
         all_words_in_list = list(word_file.read().split())
 
     print(f"There are {len(all_words_in_list)} words in total.")
 
-    right_length = []
-    for word_to_check in all_words_in_list:
-        if len(word_to_check) == WORD_LENGTH:
-            right_length.append(word_to_check)
-
-    print(f"There are {len(right_length)} words with the right length.")
-
-    valid_words = []
-    for word in right_length:
-        is_valid = check_word(word)
-        if is_valid:
-            valid_words.append(word)
-
-    print(f"There are {len(valid_words)} words without repeating letters.")
-
-    no_anagrams = []
+    correct_words = []
     sorted_words = []
-    for word in valid_words:
-        sorted_word = ''.join(sorted(word))
+    for word_to_check in all_words_in_list:
+        if len(word_to_check) != WORD_LENGTH:
+            continue
+
+        is_valid = check_word(word_to_check)
+        if not is_valid:
+            continue
+
+        sorted_word = ''.join(sorted(word_to_check))
         if sorted_word in sorted_words:
             continue
+
         sorted_words.append(sorted_word)
-        no_anagrams.append(word)
+        correct_words.append(word_to_check)
 
-    print(f"There are {len(no_anagrams)} words that aren't anagrams.")
+    print(f"There are {len(correct_words)} words that are the correct length, " +
+          "no anagram and do not have any repeating letters.")
 
-    sorted_list = sorted(no_anagrams, key=lambda word:
+    sorted_list = sorted(correct_words, key=lambda word:
         [CUSTOM_ORDER.index(letter) for letter in word])
     print("Sorted according to custom order")
+    print(f"Created word list in {calculate_time_passed(filtering_start_time, time.time())}")
     return sorted_list
 
 
@@ -60,9 +57,12 @@ def check_word(word):
 
 def check_word_to_other_word(used_letters, word):
     index = 0
-    for letter in sorted(word):
-        if letter in sorted(used_letters, key=lambda word:
-            [CUSTOM_ORDER.index(letter) for letter in word]):
+    sorted_word = sorted(word, key=lambda character:
+            [CUSTOM_ORDER.index(letter) for letter in character])
+    sorted_used_letters = sorted(used_letters, key=lambda sorted_word:
+            [CUSTOM_ORDER.index(letter) for letter in sorted_word])
+    for letter in sorted_word:
+        if letter in sorted_used_letters:
             return False
         index += 1
     return True
@@ -92,11 +92,10 @@ def word_loop(previous_tried_groups, previous_words, possibility,
                 continue
             previous_words.append(word)
             words = previous_words[:]
-            all_combinations.append(words)
             if len(words) == MAX_NUM_WORDS:
                 print("WOOHOOOOOW")
                 print(words)
-            if len(words)+1 > MAX_NUM_WORDS:
+                all_combinations.append(words)
                 return possibility
             possibility = word_loop(tried_groups, words, possibility,
                                     depth+1, counter, start_time)
@@ -118,8 +117,6 @@ def default_loop_actions(word_in_loop, previous_words, possibility):
         return "", possibility
     possibility = previous_words[:]
     possibility.append(word_in_loop)
-    if len(possibility) <= len(possibility):
-        possibility = possibility[:]
     return "".join(possibility), possibility
 
 
