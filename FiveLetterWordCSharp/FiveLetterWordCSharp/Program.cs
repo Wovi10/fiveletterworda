@@ -5,10 +5,10 @@ internal static class Program
     private const int WordLength = 5;
     private const int CheckingStep = 1000;
 
-    private static readonly char[] CustomOrder2 = ['e', 's', 'i', 'a', 'r', 'n', 't', 'o', 'l', 'c', 'd', 'u', 'g', 'p', 'm', 
-        'h', 'b', 'y', 'f', 'v', 'k', 'w', 'z', 'x', 'j', 'q'];
-    private static readonly char[] CustomOrder = ['q', 'j', 'x', 'z', 'w', 'k', 'v', 'f', 'y', 'b', 'h', 'm', 'p', 'g', 'u', 
-        'd', 'c', 'l', 'o', 't', 'n', 'r', 'a', 'i', 's', 'e'];
+    private static readonly char[] CustomOrder2 = {'e', 's', 'i', 'a', 'r', 'n', 't', 'o', 'l', 'c', 'd', 'u', 'g', 'p', 'm', 
+        'h', 'b', 'y', 'f', 'v', 'k', 'w', 'z', 'x', 'j', 'q'};
+    private static readonly char[] CustomOrder = {'q', 'j', 'x', 'z', 'w', 'k', 'v', 'f', 'y', 'b', 'h', 'm', 'p', 'g', 'u', 
+        'd', 'c', 'l', 'o', 't', 'n', 'r', 'a', 'i', 's', 'e'};
 
     private const int MaxNumWords = 26 / WordLength;
 
@@ -24,7 +24,7 @@ internal static class Program
             Console.WriteLine(string.Join(", ", combination));
         }
 
-        Console.WriteLine($"====== Finished running. ======");
+        Console.WriteLine("====== Finished running. ======");
     }
 
     private static void GetWords()
@@ -85,7 +85,7 @@ internal static class Program
 
     private static void MakeAllCombinations()
     {
-        WordLoop("", [], []);
+        WordLoop("", new List<string>(), new List<string>());
     }
 
     private static List<string> WordLoop(string previousTriedGroups, List<string> previousWords, List<string> possibility, int depth = 1, int counter = 0)
@@ -132,7 +132,7 @@ internal static class Program
                 {
                     Console.WriteLine("WOOHOOOOOW");
                     Console.WriteLine(string.Join(", ", words));
-                    AllCombinations.Add([..words]);
+                    AllCombinations.Add(words);
                     return possibility;
                 }
                 possibility = WordLoop(triedGroups, words, possibility, depth + 1, counter);
@@ -161,7 +161,8 @@ internal static class Program
         {
             return ("", possibility);
         }
-        possibility = [..previousWords, wordInLoop];
+
+        possibility = previousWords.Append(wordInLoop).ToList();
         return (string.Join("", possibility), possibility);
     }
 
@@ -177,8 +178,8 @@ internal static class Program
 
     private static string SortString(string input)
     {
-        char[] customOrder = ['q', 'j', 'x', 'z', 'w', 'k', 'v', 'f', 'y', 'b', 'h', 'm', 'p', 'g', 'u', 
-            'd', 'c', 'l', 'o', 't', 'n', 'r', 'a', 'i', 's', 'e'];
+        char[] customOrder = {'q', 'j', 'x', 'z', 'w', 'k', 'v', 'f', 'y', 'b', 'h', 'm', 'p', 'g', 'u', 
+            'd', 'c', 'l', 'o', 't', 'n', 'r', 'a', 'i', 's', 'e'};
         var chars = input.ToCharArray()
             .OrderBy(c => Array.IndexOf(customOrder, c))
             .ToArray();

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FiveLetterWordCSharp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+593f7a000755001f8faf9bad5efd951d944ac250")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+332f89f99d1e27ea4b66a76134a8147a2cd2d1d5")]
 [assembly: System.Reflection.AssemblyProductAttribute("FiveLetterWordCSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FiveLetterWordCSharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
