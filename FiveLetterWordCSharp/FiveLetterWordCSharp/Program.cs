@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using Microsoft.VisualBasic;
-
-namespace FiveLetterWordCSharp;
+﻿namespace FiveLetterWordCSharp;
 
 internal static class Program
 {

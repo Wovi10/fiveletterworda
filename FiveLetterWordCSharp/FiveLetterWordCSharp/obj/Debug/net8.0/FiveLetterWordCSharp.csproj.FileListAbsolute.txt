@@ -1,0 +1,15 @@
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\bin\Debug\net8.0\FiveLetterWordCSharp.exe
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\bin\Debug\net8.0\FiveLetterWordCSharp.deps.json
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\bin\Debug\net8.0\FiveLetterWordCSharp.runtimeconfig.json
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\bin\Debug\net8.0\FiveLetterWordCSharp.dll
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\bin\Debug\net8.0\FiveLetterWordCSharp.pdb
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.GeneratedMSBuildEditorConfig.editorconfig
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.AssemblyInfoInputs.cache
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.AssemblyInfo.cs
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.csproj.CoreCompileInputs.cache
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.sourcelink.json
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.dll
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\refint\FiveLetterWordCSharp.dll
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.pdb
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\FiveLetterWordCSharp.genruntimeconfig.cache
+D:\Github\fiveletterworda\FiveLetterWordCSharp\FiveLetterWordCSharp\obj\Debug\net8.0\ref\FiveLetterWordCSharp.dll
